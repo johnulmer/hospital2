@@ -9,11 +9,10 @@ import java.util.Random;
 
 public class Hospital {
 	
-	// declare two arrays, one for patients, one that will hold doctors & nurses
-	private static Patient[] patients;
 	private static CareGiver[] careGivers;
 	
-	private static void populatePatients() {
+	// commented out after persistence working
+	private static void populatePatients(Patient[] patients) {
 		String[] firsts = new String[]{"Erasmo", "Ellsworth", "Kecia", "Carletta",
 			"Stephanie", "Horacio", "Gaston", "Janene", "Miesha", "Trudy"};
 		String[] lasts = new String[]{"Ebron", "Ericson", "Kerman", "Conkling",
@@ -26,6 +25,8 @@ public class Hospital {
 			patients[i] = p;
 		}
 	}
+
+	
 	private static void populateCareGivers() {
 		for (int i = 0; i < 5; i++) {
 			Doctor d = new Doctor();
@@ -40,25 +41,27 @@ public class Hospital {
 		}
 	}
 	
-	private static void readCharts() {
-		for (int i = 0; i < 10; i++) {
+	private static void readCharts(Patient[] patients) {
+		for (int i = 0; i < patients.length; i++) {
+			//System.out.println(patients[i].toString());
 			System.out.println("Treating patient: " + patients[i].getFormattedName());
 			Random rand = new Random();
 			int randomNum = rand.nextInt(10);
 			System.out.println(careGivers[randomNum].readChart(patients[i])); 
-			System.out.println(); 
+			System.out.println("test"); 
 		}
 	}
 	
 	private static void persistPatients(Patient[] patients) {
 		try {
 			FileOutputStream fileOut =
-					new FileOutputStream("patients.ser");
+					new FileOutputStream("objects.ser");
 			ObjectOutputStream out = new ObjectOutputStream(fileOut);
 			for (int i = 0; i < patients.length; i++ ){
-				Patient p = new Patient();
-				p = patients[i];
-				out.writeObject(p);
+				//Patient p = new Patient();
+				//p = patients[i];
+				//out.writeObject(p);
+				out.writeObject(patients[i]);
 			}
 			out.close();
 			fileOut.close();
@@ -84,10 +87,10 @@ public class Hospital {
 					//e.printStackTrace();
 					break;
 				}
+				fis.close();
 			}
 		} catch (Exception e) { 
 			e.printStackTrace();
-
 		}
 	}
 
@@ -95,17 +98,17 @@ public class Hospital {
 	
 	public static void main (String args[]) {
 		//initialize the Arrays of Patients and Staff
-		patients = new Patient[10];
+		Patient[] patients = new Patient[10];
 		careGivers = new CareGiver[10];
 		
 		//populate patients, doctors, nurses
-		//populatePatients();
+		//populatePatients(patients); //- no longer needed now that persisting through serialization
 		loadPatients(patients);
 		
 		populateCareGivers();
 
 		// for each patient, have a random CareGiver read a patient's chart
-		readCharts();
+		readCharts(patients);
 		
 		//save patients out to file
 		persistPatients(patients);
